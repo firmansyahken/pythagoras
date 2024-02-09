@@ -1,0 +1,116 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <style>
+            canvas {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                border: 1px solid;
+            }
+
+            .info {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                max-width: 800px;
+                margin: auto;
+                font-size: 24px;
+                text-align: center;
+            }
+        </style>
+
+        <div class="info">
+            <p id="distance"></p>
+            <p id="dx"></p>
+            <p id="dy"></p>
+            <p id="angle"></p>
+        </div>
+        <canvas></canvas>
+        
+        <script>
+            const canvas = document.querySelector("canvas")
+            const ctx = canvas.getContext("2d")
+            canvas.width = 800
+            canvas.height = 500
+
+            class Box {
+                constructor(x, y, width, height, color) {
+                    this.width =  width
+                    this.height = height
+                    this.x = x
+                    this.y = y
+                    this.color = color
+                }
+                
+                update(x, y) {
+                    this.x = x
+                    this.y = y
+                }
+
+                draw() {
+                    ctx.fillStyle = this.color
+                    ctx.fillRect(this.x, this.y, this.width, this.height)
+                }
+            }
+
+            
+            const box1 = new Box(canvas.width * 0.5 - 50, canvas.height * 0.5 - 50, 50, 50, "black")
+            const box2 = new Box(100, 0, 50, 50, "green")
+            function animate() {
+                ctx.clearRect(0,0,canvas.width,canvas.height)
+                box1.draw()
+                box2.draw()
+
+                ctx.beginPath();
+                ctx.moveTo(box1.x + box1.width / 2, box1.y + box1.height / 2);
+                ctx.lineTo(box2.x + box2.width / 2, box2.y + box2.height / 2);
+                ctx.strokeStyle = "blue";
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(box1.x + box1.width / 2, box1.y + box1.height / 2);
+                ctx.lineTo(box2.x + box2.width / 2, box1.y + box1.height / 2);
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(box2.x + box2.width / 2, box1.y + box1.height / 2);
+                ctx.lineTo(box2.x + box2.width / 2, box2.y + box2.height / 2);
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+
+                window.addEventListener("mousemove", function(e) {
+                    box2.update(e.offsetX, e.offsetY)
+                    let dx = box2.x - box1.x
+                    let dy = box2.y - box1.y
+                    let distance = Math.sqrt((dx * dx) + (dy * dy))
+                    let angle = Math.atan2(dy, dx)
+
+                    if(distance < box1.width) {
+                        return box2.color = "yellow"
+                    }
+                    box2.color = "green"
+
+                    document.getElementById("distance").innerText = "Distance: "+distance.toFixed(2)
+                    document.getElementById("dx").innerText = "dx: "+dx
+                    document.getElementById("dy").innerText = "dy: "+dy
+                    document.getElementById("angle").innerText = "angle: "+angle.toFixed(2)
+                })
+                
+                requestAnimationFrame(animate)
+            }
+
+            animate()
+
+
+
+        </script>
+    </body>
+    </html>
